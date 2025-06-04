@@ -7,7 +7,8 @@ pip install jupyter
 
 # Clone the repository.
 git clone https://github.com/mpi2/impc_working_group_data
-cd impc_working_group_data/hmgu
+cd impc_working_group_data
+cd hmgu
 
 # Run Jupyter Notebook.
 jupyter notebook
