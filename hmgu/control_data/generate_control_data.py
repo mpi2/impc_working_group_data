@@ -17,6 +17,25 @@ def get_unique_and_statistics(df, where="dataframe"):
     return unique_df
 
 def main(input_dir):
+    """
+    Generates control datasets from IMPC observation parquet files.
+
+    This script processes a directory of observation data in Parquet format.
+    It separates specimens based on whether their 'colony_id' is known or 'unknown'.
+
+    1.  For specimens with an 'unknown' colony_id, it renames columns,
+        finds unique records, and saves them to 'output_control/control_unknown.csv'.
+
+    2.  For specimens with a known colony_id, it identifies control specimens
+        and joins them with experimental data on 'colony_id' to enrich the
+        control data with 'allele_accession_id' and 'gene_accession_id'.
+        The final processed control data is saved to 'output_control/control_data.csv'.
+
+    Args:
+        input_dir (str): The path to the directory containing the input
+                         observation parquet files.
+
+    """
     input_path = Path(input_dir)
     if not input_path.exists() or not input_path.is_dir():
         print(f"Error: Provided input path '{input_dir}' does not exist or is not a directory.")
