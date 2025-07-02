@@ -33,7 +33,10 @@ def main(input_dir):
     output_dir.mkdir(exist_ok=True)
 
     # Load and concatenate lazy frames.
-    lazy_frames = [pl.scan_parquet(str(file)).select(requested_columns) for file in input_path.glob("*.parquet")]
+    lazy_frames = [
+        pl.scan_parquet(str(file)).select(requested_columns)
+        for file in input_path.glob("*.parquet")
+    ]
     lazy_df = pl.concat(lazy_frames)
 
     total_rows = lazy_df.select(pl.len()).collect().item()
