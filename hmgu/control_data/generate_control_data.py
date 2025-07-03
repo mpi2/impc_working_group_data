@@ -16,25 +16,40 @@ def get_unique_and_statistics(df, where="dataframe"):
     print(f"Number of unique rows {where}: {unique_rows}")
     return unique_df
 
+
+def format_and_save(df, output_path):
+    """
+    Formats the dataframe:
+    - Converts 'batch' to YYYY-MM-DD.
+    - Replaces nulls with 'NA'.
+    - Reorders columns as specified.
+    - Saves to the provided output path.
+    """
+    # Desired column order
+    column_order = [
+        'specimen_id', 'group', 'background_strain_name', 'colony_id',
+        'marker_accession_id', 'allele_accession_id', 'batch', 'metadata_group',
+        'weight', 'sex', 'production_center', 'phenotyping_center'
+    ]
+
+    # Format batch to date
+    df = df.with_columns(
+        pl.col("batch").str.slice(0, 10).alias("batch")
+    )
+
+    # Fill nulls with "NA"
+    df = df.fill_null("NA")
+
+    # Reorder columns
+    df = df.select(column_order)
+
+    # Save to CSV
+    df.write_csv(output_path)
+
+
 def main(input_dir):
     """
     Generates control datasets from IMPC observation parquet files.
-
-    This script processes a directory of observation data in Parquet format.
-    It separates specimens based on whether their 'colony_id' is known or 'unknown'.
-
-    1.  For specimens with an 'unknown' colony_id, it renames columns,
-        finds unique records, and saves them to 'output_control/control_unknown.csv'.
-
-    2.  For specimens with a known colony_id, it identifies control specimens
-        and joins them with experimental data on 'colony_id' to enrich the
-        control data with 'allele_accession_id' and 'gene_accession_id'.
-        The final processed control data is saved to 'output_control/control_data.csv'.
-
-    Args:
-        input_dir (str): The path to the directory containing the input
-                         observation parquet files.
-
     """
     input_path = Path(input_dir)
     if not input_path.exists() or not input_path.is_dir():
@@ -69,12 +84,14 @@ def main(input_dir):
             'external_sample_id': 'specimen_id',
             'biological_sample_group': 'group',
             'strain_name': 'background_strain_name',
-            'date_of_experiment': 'batch'
+            'date_of_experiment': 'batch',
+            'gene_accession_id': 'marker_accession_id'
         })
     )
 
     unique_unknown_df = get_unique_and_statistics(unknown_df, "with unknown colony_id").collect()
-    unique_unknown_df.write_csv(output_dir / "control_unknown.csv")
+
+    format_and_save(unique_unknown_df, output_dir / "control_unknown.csv")
 
     # Process rows with known colony_id.
     filtered_df = lazy_df.filter(pl.col("colony_id") != "unknown")
@@ -102,13 +119,16 @@ def main(input_dir):
         'external_sample_id': 'specimen_id',
         'biological_sample_group': 'group',
         'strain_name': 'background_strain_name',
-        'date_of_experiment': 'batch'
+        'date_of_experiment': 'batch',
+        'gene_accession_id': 'marker_accession_id'
     })
 
     get_unique_and_statistics(joined_df, "in joined dataframe")
 
     out_joined_df = joined_df.collect()
-    out_joined_df.write_csv(output_dir / "control_data.csv")
+
+    format_and_save(out_joined_df, output_dir / "control_data.csv")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
