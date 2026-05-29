@@ -1,0 +1,10 @@
+impc_api
+jupyter
+matplotlib
+matplotlib-venn
+numpy
+openpyxl
+pandas
+polars
+requests
+tqdm
