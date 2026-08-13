@@ -1,11 +1,12 @@
 variables:
   DS_ENFORCE_NEW_ANALYZER: 'true'
   GITLAB_ADVANCED_SAST_ENABLED: 'true'
+  DS_ENABLE_MANIFEST_FALLBACK: "true"
 
 include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.v2.gitlab-ci.yml
 
 sast:
   stage: test
