@@ -1,7 +1,7 @@
 impc_api
 jupyter
 jupyter-server>=2.21.0
-jupyterlab>=4.6.2
+jupyterlab>=4.6.4
 matplotlib
 matplotlib-venn
 numpy
