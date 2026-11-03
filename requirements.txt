@@ -1,13 +1,13 @@
 impc_api
 jupyter
-jupyter-server>=2.21.0
-jupyterlab>=4.6.4
+jupyter-server>=2.21.1
+jupyterlab>=4.6.5
 matplotlib
 matplotlib-venn
 numpy
 openpyxl
 pandas
-pillow>=12.3.0
+pillow>=13.0.0
 polars
 requests
 tqdm
